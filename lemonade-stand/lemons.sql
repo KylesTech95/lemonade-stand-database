@@ -49,8 +49,7 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.customers (
     customer_id integer NOT NULL,
-    name character varying(15) NOT NULL,
-    cash_on_hand numeric(4,2)
+    name character varying(15) NOT NULL
 );
 
 
@@ -84,8 +83,8 @@ ALTER SEQUENCE public.customers_customer_id_seq OWNED BY public.customers.custom
 
 CREATE TABLE public.product (
     product_id integer NOT NULL,
-    lemons integer DEFAULT 6,
-    available boolean DEFAULT true
+    available boolean DEFAULT true,
+    lemons character varying(15) NOT NULL
 );
 
 
@@ -119,13 +118,38 @@ ALTER SEQUENCE public.product_product_id_seq OWNED BY public.product.product_id;
 
 CREATE TABLE public.transaction (
     transaction_id integer NOT NULL,
-    customer_bought boolean DEFAULT false,
-    payment_expected integer DEFAULT 5,
-    payment_received numeric(4,2)
+    price numeric(3,2) DEFAULT 3.50,
+    payment_received numeric(4,2),
+    payment_confirmation_id integer NOT NULL,
+    payment_difference numeric(3,2),
+    product_id integer NOT NULL,
+    customer_id integer NOT NULL
 );
 
 
 ALTER TABLE public.transaction OWNER TO postgres;
+
+--
+-- Name: transaction_payment_confirmation_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.transaction_payment_confirmation_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.transaction_payment_confirmation_id_seq OWNER TO postgres;
+
+--
+-- Name: transaction_payment_confirmation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.transaction_payment_confirmation_id_seq OWNED BY public.transaction.payment_confirmation_id;
+
 
 --
 -- Name: transaction_transaction_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -171,9 +195,17 @@ ALTER TABLE ONLY public.transaction ALTER COLUMN transaction_id SET DEFAULT next
 
 
 --
+-- Name: transaction payment_confirmation_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.transaction ALTER COLUMN payment_confirmation_id SET DEFAULT nextval('public.transaction_payment_confirmation_id_seq'::regclass);
+
+
+--
 -- Data for Name: customers; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.customers VALUES (13, 'Jake');
 
 
 --
@@ -192,7 +224,7 @@ ALTER TABLE ONLY public.transaction ALTER COLUMN transaction_id SET DEFAULT next
 -- Name: customers_customer_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.customers_customer_id_seq', 1, false);
+SELECT pg_catalog.setval('public.customers_customer_id_seq', 13, true);
 
 
 --
@@ -200,6 +232,13 @@ SELECT pg_catalog.setval('public.customers_customer_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.product_product_id_seq', 1, false);
+
+
+--
+-- Name: transaction_payment_confirmation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.transaction_payment_confirmation_id_seq', 1, false);
 
 
 --
@@ -218,6 +257,14 @@ ALTER TABLE ONLY public.customers
 
 
 --
+-- Name: product product_lemons_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.product
+    ADD CONSTRAINT product_lemons_key UNIQUE (lemons);
+
+
+--
 -- Name: product product_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -231,6 +278,22 @@ ALTER TABLE ONLY public.product
 
 ALTER TABLE ONLY public.transaction
     ADD CONSTRAINT transaction_pkey PRIMARY KEY (transaction_id);
+
+
+--
+-- Name: transaction transaction_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.transaction
+    ADD CONSTRAINT transaction_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.customers(customer_id);
+
+
+--
+-- Name: transaction transaction_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.transaction
+    ADD CONSTRAINT transaction_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.product(product_id);
 
 
 --
