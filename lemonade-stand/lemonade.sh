@@ -2,8 +2,6 @@
 # Declare PSQL
 PSQL="psql -X --username=postgres --dbname=lemonade --tuples-only -c"
 
-# Uncomment truncate next line to refresh database values
-# echo $($PSQL "truncate product,transaction,customers")
 
 echo -e "\n~~~ Welcome to my Lemonade Stand ~~~"
 
