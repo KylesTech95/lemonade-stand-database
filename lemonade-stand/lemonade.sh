@@ -73,11 +73,11 @@ sleep 1
                 echo $AVAILABLE_LEMONS | sed -E 's/\|//g' | sed -E 's/t//g' | sed -E 's/   ([a-zA-Z]+)/\1\n/g' | sed -E "s/^ //g"
                 read OPTION
                 # if option is invalid
-                LEMON_SELECTED=$($PSQL "select lemons from product where product_id=$OPTION")
-                if [[ !$LEMON_SELECTED =~ ^[0-9]{,2}$ ]]
+                if [[ ! $OPTION =~ ^[0-9]{1,2}$ || $OPTION > 40 ]]
                 then
                     echo -e "\n This is not a valid selection"
                 else
+                    LEMON_SELECTED=$($PSQL "select lemons from product where product_id=$OPTION")
                     echo -e "\n$CUSTOMER_NAME selected$LEMON_SELECTED lemon-batch"
                 fi
 
