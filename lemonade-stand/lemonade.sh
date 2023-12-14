@@ -22,31 +22,31 @@ esac
 }
 PURCHASE(){
 echo -e "Welcome to Purchase"
-# display available lemons
-AVAILABLE_LEMONS=$($PSQL "select product_id from product where available = true order by product_id")
-# if not lemons available
-if [[ -z $AVAILABLE_LEMONS ]]
-then 
-    MENU "Apologies, but we are sold out. Come again tomorrow"
-else
-# display available lemons
-    echo -e "\nHere are the available lemons, grouped by type"
-    echo "$AVAILABLE_LEMONS" | while read PRODUCT_ID BAR LEMONS
+
+# insert lemons
+# Obtain contents from csv file, replace all instances of \r carriage
+cat product.csv | sed -e 's/\r$//g' | while IFS="," read LEMONS
 do
-    echo "$PRODUCT_ID) $LEMONS LEMONS."
+    GET_ROWS=$($PSQL "select count(product_id) from product")
+if [[ $LEMONS != 'lemons' && $GET_ROWS -lt 40 ]]
+then
+    INSERT_LEMONS=$($PSQL "insert into product(lemons) values('$LEMONS')")
+    # if [[ $INSERT_LEMONS == "INSERT 0 1" ]]
+    # then
+    #     echo Inserted into lemons, $LEMONS
+    # fi
+ fi   
 done
-echo -e "\nWhich type would you like to buy?"
-read LEMON_ID_TO_BUY
-
-
-fi
 }
+
+
 VIEW_OUR_SALES(){
-echo -e "View our sales"
+echo "View our sales"
 }
+
+
 EXIT(){
-    sleep 1
-    MENU
+    echo "Thank you for visiting the shop!"
 }
 
 
