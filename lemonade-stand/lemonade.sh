@@ -24,18 +24,22 @@ PURCHASE(){
 echo -e "Welcome to Purchase"
 
 # insert lemons
-# Obtain contents from csv file, replace all instances of \r carriage
-cat product.csv | sed -e 's/\r$//g' | while IFS="," read LEMONS
+# get contents from csv file | replace /r(carriage returns) with emptylines
+cat product.csv | sed -e 's/\r//g' | while IFS="," read LEMONS
 do
-    GET_ROWS=$($PSQL "select count(product_id) from product")
-if [[ $LEMONS != 'lemons' && $GET_ROWS -lt 40 ]]
-then
-    INSERT_LEMONS=$($PSQL "insert into product(lemons) values('$LEMONS')")
-    # if [[ $INSERT_LEMONS == "INSERT 0 1" ]]
-    # then
-    #     echo Inserted into lemons, $LEMONS
-    # fi
- fi   
+# select lemons from product
+    GET_ROWS=$($PSQL "select count(lemons) from product")
+    # if selection is not equal to "lemons" && number of rows is less than 40
+        if [[ $LEMONS != 'lemons' && $GET_ROWS -lt 40 ]]
+        then
+        #insert lemons
+            INSERT_LEMONS=$($PSQL "insert into product(lemons) values('$LEMONS')")
+            # if variable equals string, reformat echoed string.
+                if [[ $INSERT_LEMONS == "INSERT 0 1" ]]
+                then
+                    echo "$LEMONS inserted into inventory"
+                fi
+        fi     
 done
 }
 
