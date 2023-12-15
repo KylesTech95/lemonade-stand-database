@@ -14,7 +14,9 @@ echo -e "\n~~~ Welcome to my Lemonade Stand ~~~\n"
 # Get sales info:
 #$CUSTOMER_NAME $CUSTOMER_PAYMENT $PRICE $QUANTITY $CUSTOMER_ID $PRODUCT_ID
 GET_SALES_INFORMATION(){
-    echo -e "\n$1 $2 $3 $4 $5 $6"
+    echo -e "$1 $2 $3 $4 $5 $6"
+    sleep 1
+    MENU
 }
 #_______________________________________________________________________________________________________________________
 
@@ -22,7 +24,7 @@ GET_SALES_INFORMATION(){
 #start transaction
 # $CUSTOMER_NAME $CUSTOMER_PAYMENT $PRICE $QUANTITY $CUSTOMER_ID $PRODUCT_ID
 START_TRANSACTION(){
-   echo -e "\n Welcome to transaction\n"
+   echo -e "\n~~~ Welcome to transaction ~~~\n"
    INSERT_INTO_TRANSACTION=$($PSQL "insert into transaction(payment_received,price,product_id,customer_id,quantity_bought) values('$2','$3',$6,$5,$4)")
        TRANSACTION_ID=$($PSQL "select transaction_id from transaction where customer_id=$5")
 
@@ -123,7 +125,14 @@ MENU
 else
 # select a valid lemon
 LEMON_SELECTED=$($PSQL "select lemons from product where product_id=$PRODUCT_ID")
+
 echo -e "\n$CUSTOMER_NAME selected$LEMON_SELECTED lemon-batch"
+INSERT_LEMON_1=$($PSQL "update customers set first_lemon='$PRODUCT_ID)$LEMON_SELECTED' where customer_id=$CUSTOMER_ID")
+            if [[ $INSERT_LEMON_1 = 'INSERT 0 1' ]]
+            then
+            # Desired output (if lemon is inserted)
+                echo -e "$LEMON_SELECTED has been inserted into first_lemon."
+            fi
 # set lemon to false by product_id
 UPDATE_AVAILABLE=$($PSQL "update product set available=false where product_id=$PRODUCT_ID")
 sleep 1
@@ -134,8 +143,7 @@ read ANSWER
         echo -e "\nIt is a simple question..."
         sleep 1 
         read ANSWER
-    else
-        if [[ $ANSWER = 'n' ]]
+    elif [[ $ANSWER = 'n' ]]
         then
             QUANTITY=1
             #state price
@@ -180,6 +188,13 @@ read ANSWER
             echo -e "\n$CUSTOMER_NAME selected$LEMON_SELECTED lemon-batch"
         # set lemon to false by product_id2
             UPDATE_AVAILABLE=$($PSQL "update product set available=false where product_id=$PRODUCT_ID2")
+            INSERT_LEMON_2=$($PSQL "update customers set second_lemon='$PRODUCT_ID2)$LEMON_SELECTED' where customer_id=$CUSTOMER_ID")
+            if [[ $INSERT_LEMON_2 = 'INSERT 0 1' ]]
+            then
+            # Desired output (if lemon is inserted)
+                echo -e "$LEMON_SELECTED has been inserted into second_lemon."
+            fi
+            
             fi
             #state price
             # TOTAL_PRICE
@@ -205,7 +220,6 @@ read ANSWER
                 
             fi
         fi
-    fi
 
 fi
 
