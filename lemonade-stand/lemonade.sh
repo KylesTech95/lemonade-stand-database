@@ -4,9 +4,18 @@ PSQL="psql -X --username=postgres --dbname=lemonade --tuples-only -c"
 # echo $($PSQL "alter sequence product_product_id_seq restart with 1;alter sequence transaction_transaction_id_seq restart with 1; alter sequence customers_customer_id_seq restart with 1;truncate product,transaction,customers;")
 echo -e "\n~~~ Welcome to my Lemonade Stand ~~~\n"
 #start transaction
-# CUSTOMER_PAYMENT PRICE CUSTOMER_ID
+# $CUSTOMER_NAME $CUSTOMER_PAYMENT $PRICE $QUANTITY $CUSTOMER_ID $PRODUCT_ID
 START_TRANSACTION(){
    echo -e "\n Welcome to transaction\n"
+   INSERT_INTO_TRANSACTION=$($PSQL "insert into transaction(payment_received,price,product_id,customer_id,quantity_bought) values('$2','$3',$6,$5,$4)")
+       TRANSACTION_ID=$($PSQL "select transaction_id from transaction where customer_id=$5")
+
+    if [[ $INSERT_INTO_TRANSACTION = 'INSERT 0 1' ]]
+    then
+    # Desired output (if name is inserted)
+
+        echo "$CUSTOMER_NAME inserted into transaction table. Transaction#: TRA$TRANSACTION_ID" | sed -E 's/(\s+)?([0-9]+)(\s+)?/-\2/'
+    fi
 }
 
 INSERT_INVENTORY(){
@@ -107,7 +116,8 @@ read ANSWER
         then
             QUANTITY=1
             #state price
-            echo -e "\nThis will come out to \$3.50"
+            PRICE=$(echo "3.50")
+            echo -e "\nThis will come out to \$$PRICE"
             echo -e "\nEnter payment (ex: 3.50 or 5.35 or 4.00)"
             read CUSTOMER_PAYMENT
             # reformat customer_payment with sed
@@ -117,10 +127,14 @@ read ANSWER
                 echo -e "\nPlease enter with the specified format. (ex: 3.50 or 5.35 or 4.00)"
                 read CUSTOMER_PAYMENT
                 echo -e "\n$CUSTOMER_NAME paid \$$CUSTOMER_PAYMENT" | sed -E 's/(\.[0-9]{1})$/\10/'
-                MENU
+                echo -e "\nPrice: $PRICE" | sed -E 's/(\.[0-9]{1})$/\10/'
+                echo "Quantity: $QUANTITY"
+                START_TRANSACTION $CUSTOMER_NAME $CUSTOMER_PAYMENT $PRICE $QUANTITY $CUSTOMER_ID $PRODUCT_ID
             else
                 echo -e "\n$CUSTOMER_NAME paid \$$CUSTOMER_PAYMENT" | sed -E 's/(\.[0-9]{1})$/\10/'
-                MENU
+                echo -e "\nPrice: $PRICE" | sed -E 's/(\.[0-9]{1})$/\10/'
+                echo "Quantity: $QUANTITY"
+                START_TRANSACTION $CUSTOMER_NAME $CUSTOMER_PAYMENT $PRICE $QUANTITY $CUSTOMER_ID $PRODUCT_ID
             fi
     #_______________________________________________________________________________________________________________________
         else
@@ -146,7 +160,8 @@ read ANSWER
             fi
             #state price
             # TOTAL_PRICE
-            echo -e "\nThis will come out to \$7.00"
+            PRICE=$(echo "7.00")
+            echo -e "\nThis will come out to \$$PRICE"
             echo -e "\nEnter payment (ex: 3.50 or 5.35 or 4.00)"
             read CUSTOMER_PAYMENT
             # reformat customer_payment with sed
@@ -156,10 +171,14 @@ read ANSWER
                 echo "\nPlease enter with the specified format."
                 read CUSTOMER_PAYMENT
                 echo -e "\n$CUSTOMER_NAME paid \$$CUSTOMER_PAYMENT" | sed -E 's/(\.[0-9]{1})$/\10/'
-                MENU
+                echo -e "\nPrice: $PRICE" | sed -E 's/(\.[0-9]{1})$/\10/'
+                echo "Quantity: $QUANTITY"
+                START_TRANSACTION $CUSTOMER_NAME $CUSTOMER_PAYMENT $PRICE $QUANTITY $CUSTOMER_ID $PRODUCT_ID
             else
                 echo -e "\n$CUSTOMER_NAME paid \$$CUSTOMER_PAYMENT" | sed -E 's/(\.[0-9]{1})$/\10/'
-                MENU
+                echo -e "\nPrice: $PRICE" | sed -E 's/(\.[0-9]{1})$/\10/'1
+                echo "Quantity: $QUANTITY"
+                START_TRANSACTION $CUSTOMER_NAME $CUSTOMER_PAYMENT $PRICE $QUANTITY $CUSTOMER_ID $PRODUCT_ID
                 
             fi
         fi
