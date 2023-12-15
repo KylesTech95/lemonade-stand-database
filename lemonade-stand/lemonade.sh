@@ -14,7 +14,7 @@ echo -e "\n~~~ Welcome to my Lemonade Stand ~~~\n"
 # Get sales info:
 #$CUSTOMER_NAME $CUSTOMER_PAYMENT $PRICE $QUANTITY $CUSTOMER_ID $PRODUCT_ID
 GET_SALES_INFORMATION(){
-    VIEW_OUR_SALES $1 $2 $3 $4 $5 $6
+    echo -e "\n$1 $2 $3 $4 $5 $6"
 }
 #_______________________________________________________________________________________________________________________
 
@@ -213,7 +213,6 @@ fi
 #$CUSTOMER_NAME $CUSTOMER_PAYMENT $PRICE $QUANTITY $CUSTOMER_ID $PRODUCT_ID
 VIEW_OUR_SALES(){
 echo -e "\nView our sales"
-echo -e "\n$1 $2 $3 $4 $5 $6"
 }
 
 
