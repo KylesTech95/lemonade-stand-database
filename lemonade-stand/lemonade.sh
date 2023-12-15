@@ -3,26 +3,10 @@
 PSQL="psql -X --username=postgres --dbname=lemonade --tuples-only -c"
 # echo $($PSQL "alter sequence product_product_id_seq restart with 1;alter sequence transaction_transaction_id_seq restart with 1; alter sequence customers_customer_id_seq restart with 1;truncate product,transaction,customers;")
 echo -e "\n~~~ Welcome to my Lemonade Stand ~~~\n"
-# customer_payment price quantity product_id customer_name
+#start transaction
+# CUSTOMER_PAYMENT PRICE CUSTOMER_ID
 START_TRANSACTION(){
-    if [[  $1 > $2 ]]
-    then
-        DIFFERENCE=$(awk "BEGIN { printf(\"%.2f\", $1 - $2) }")
-        echo -e "\n$5, your change is \$$DIFFERENCE" | sed -E 's/(\.[0-9]{1})$/\10/'
-    else
-        DIFFERENCE=$(awk "BEGIN { printf(\"%.2f\", $2 - $1) }")
-        echo -e "\n$5, you owe \$$DIFFERENCE" | sed -E 's/(\.[0-9]{1})$/\10/'
-    fi
-echo $DIFFERENCE
-    #extract customer_id
-    CUSTOMER_ID=$($PSQL "select customer_id from customers")
-    echo -e "\n~~~ Start transaction ~~~\n"
-    sleep 1
-    echo -e "\nOriginal price: $2"
-    # if the CUSTOMER_PAYMENT only has 1 digit after deci, add a zero at the end.
-    echo -e "Customer paid \$$1" | sed -E 's/(\.[0-9]{1})$/\10/'
-    TRANSACTION=$($PSQL "insert into transaction(price,payment_received,product_id,customer_id,quantity_bought) values('$2','$1',$4,$CUSTOMER_ID,$3)")
-    echo $TRANSACTION
+   echo -e "\n Welcome to transaction\n"
 }
 
 INSERT_INVENTORY(){
@@ -91,17 +75,19 @@ else
 fi
 # Choose available lemons to purchase
 echo -e "\nHi, $CUSTOMER_NAME\nPick your lemons."
+#retrieve customer_id from name
+CUSTOMER_ID=$($PSQL "select customer_id from customers where name = '$CUSTOMER_NAME'")
 sleep 2
 AVAILABLE_LEMONS=$($PSQL "select * from product where available=true")
 # echo $($AVAILABLE_LEMONS)
 echo $AVAILABLE_LEMONS | sed -E 's/\|//g' | sed -E 's/t//g' | sed -E 's/   ([a-zA-Z]+)/\1\n/g' | sed -E "s/^ //g"
 read PRODUCT_ID
 # if PRODUCT_ID is invalid
-if [[ ! $PRODUCT_ID =~ ^[0-9]{1,2}$ || $PRODUCT_ID > 40 ]]
+if [[ ! $PRODUCT_ID =~ ^[0-9]{1,2}$ || $PRODUCT_ID -gt 40 ]]
 then
-echo -e "\n This is not a valid selection. Try again."
+ echo -e "\n This is not a valid selection."
 sleep 1
-read PRODUCT_ID
+MENU
 else
 # select a valid lemon
 LEMON_SELECTED=$($PSQL "select lemons from product where product_id=$PRODUCT_ID")
@@ -113,7 +99,9 @@ echo -e "\nWould you like more? [y/n]"
 read ANSWER
     if [[ $ANSWER -ne 'y' || $ANSWER -ne 'n' ]]
     then
-        MENU "\nIt is a simple question..."
+        echo -e "\nIt is a simple question..."
+        sleep 1 
+        read ANSWER
     else
         if [[ $ANSWER = 'n' ]]
         then
@@ -122,16 +110,17 @@ read ANSWER
             echo -e "\nThis will come out to \$3.50"
             echo -e "\nEnter payment (ex: 3.50 or 5.35 or 4.00)"
             read CUSTOMER_PAYMENT
-            if [[ ! $CUSTOMER_PAYMENT =~ ^[0-9]{1,2}\.[0-9]{1,2}$ ]]
+            # reformat customer_payment with sed
+            CUSTOMER_PAYMENT=$(echo "$CUSTOMER_PAYMENT" | sed -E 's/(\.[0-9]{1})$/\10/')
+            if [[ ! "$CUSTOMER_PAYMENT" =~ ^[0-9]{1,2}\.[0-9]{1,2}$ ]]
             then
                 echo -e "\nPlease enter with the specified format. (ex: 3.50 or 5.35 or 4.00)"
                 read CUSTOMER_PAYMENT
-                echo -e "\n$CUSTOMER_NAME paid \$$CUSTOMER_PAYMENT"
-                START_TRANSACTION $CUSTOMER_PAYMENT 3.50 $QUANTITY $PRODUCT_ID $CUSTOMER_NAME
+                echo -e "\n$CUSTOMER_NAME paid \$$CUSTOMER_PAYMENT" | sed -E 's/(\.[0-9]{1})$/\10/'
+                MENU
             else
-                echo -e "\n$CUSTOMER_NAME paid \$$CUSTOMER_PAYMENT"
-                
-                START_TRANSACTION $CUSTOMER_PAYMENT 3.50 $QUANTITY $PRODUCT_ID $CUSTOMER_NAME
+                echo -e "\n$CUSTOMER_NAME paid \$$CUSTOMER_PAYMENT" | sed -E 's/(\.[0-9]{1})$/\10/'
+                MENU
             fi
     #_______________________________________________________________________________________________________________________
         else
@@ -143,9 +132,10 @@ read ANSWER
             echo $AVAILABLE_LEMONS2 | sed -E 's/\|//g' | sed -E 's/t//g' | sed -E 's/   ([a-zA-Z]+)/\1\n/g' | sed -E "s/^ //g"
             read PRODUCT_ID2
         # if PRODUCT_ID is invalid
-        if [[ ! $PRODUCT_ID2 =~ ^[0-9]{1,2}$ || $PRODUCT_ID2 > 40 ]]
+        if [[ ! $PRODUCT_ID2 =~ ^[0-9]{1,2}$ || $PRODUCT_ID2 -gt 40 ]]
         then
             echo -e "\n This is not a valid selection"
+            read PRODUCT_ID2
         else
         # select a valid lemon
             QUANTITY=2
@@ -159,16 +149,17 @@ read ANSWER
             echo -e "\nThis will come out to \$7.00"
             echo -e "\nEnter payment (ex: 3.50 or 5.35 or 4.00)"
             read CUSTOMER_PAYMENT
+            # reformat customer_payment with sed
+            CUSTOMER_PAYMENT=$(echo "$CUSTOMER_PAYMENT" | sed -E 's/(\.[0-9]{1})$/\10/')
             if [[ ! $CUSTOMER_PAYMENT =~ ^[0-9]{1,2}\.[0-9]{1,2}$ ]]
             then
                 echo "\nPlease enter with the specified format."
                 read CUSTOMER_PAYMENT
-                echo -e "\n$CUSTOMER_NAME paid \$$CUSTOMER_PAYMENT"
-                START_TRANSACTION $CUSTOMER_PAYMENT 7.00 $QUANTITY $PRODUCT_ID2 $CUSTOMER_NAME
+                echo -e "\n$CUSTOMER_NAME paid \$$CUSTOMER_PAYMENT" | sed -E 's/(\.[0-9]{1})$/\10/'
+                MENU
             else
-                echo -e "\n$CUSTOMER_NAME paid \$$CUSTOMER_PAYMENT"
-
-                START_TRANSACTION $CUSTOMER_PAYMENT 7.00 $QUANTITY $PRODUCT_ID2 $CUSTOMER_NAME
+                echo -e "\n$CUSTOMER_NAME paid \$$CUSTOMER_PAYMENT" | sed -E 's/(\.[0-9]{1})$/\10/'
+                MENU
                 
             fi
         fi
