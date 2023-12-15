@@ -1,8 +1,24 @@
 #!/bin/bash
 # Declare PSQL
 PSQL="psql -X --username=postgres --dbname=lemonade --tuples-only -c"
+
+#if you want to insert your own daa:
+#uncomment the next line to clear the database values & reset all sequences to 1.
 # echo $($PSQL "alter sequence product_product_id_seq restart with 1;alter sequence transaction_transaction_id_seq restart with 1; alter sequence customers_customer_id_seq restart with 1;truncate product,transaction,customers;")
+#run the script "./lemonade.sh"
+#insert your own data (original data is cleared)
+#comment the line that was uncommented to save data
+
 echo -e "\n~~~ Welcome to my Lemonade Stand ~~~\n"
+#_______________________________________________________________________________________________________________________
+# Get sales info:
+#$CUSTOMER_NAME $CUSTOMER_PAYMENT $PRICE $QUANTITY $CUSTOMER_ID $PRODUCT_ID
+GET_SALES_INFORMATION(){
+    VIEW_OUR_SALES $1 $2 $3 $4 $5 $6
+}
+#_______________________________________________________________________________________________________________________
+
+#_______________________________________________________________________________________________________________________
 #start transaction
 # $CUSTOMER_NAME $CUSTOMER_PAYMENT $PRICE $QUANTITY $CUSTOMER_ID $PRODUCT_ID
 START_TRANSACTION(){
@@ -16,7 +32,14 @@ START_TRANSACTION(){
 
         echo "$CUSTOMER_NAME inserted into transaction table. Transaction#: TRA$TRANSACTION_ID" | sed -E 's/(\s+)?([0-9]+)(\s+)?/-\2/'
     fi
+    # Get sales info: 
+    # $CUSTOMER_NAME $CUSTOMER_PAYMENT $PRICE $QUANTITY $CUSTOMER_ID $PRODUCT_ID
+    GET_SALES_INFORMATION $1 $2 $3 $4 $5 $6
 }
+#_______________________________________________________________________________________________________________________
+
+
+
 
 INSERT_INVENTORY(){
     # insert lemons
@@ -187,9 +210,10 @@ read ANSWER
 fi
 
 }
-
+#$CUSTOMER_NAME $CUSTOMER_PAYMENT $PRICE $QUANTITY $CUSTOMER_ID $PRODUCT_ID
 VIEW_OUR_SALES(){
-echo "View our sales"
+echo -e "\nView our sales"
+echo -e "\n$1 $2 $3 $4 $5 $6"
 }
 
 

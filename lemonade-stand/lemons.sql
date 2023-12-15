@@ -120,36 +120,13 @@ CREATE TABLE public.transaction (
     transaction_id integer NOT NULL,
     price numeric(3,2) DEFAULT 3.50,
     payment_received numeric(4,2),
-    payment_confirmation_id integer NOT NULL,
-    payment_difference numeric(3,2),
     product_id integer NOT NULL,
-    customer_id integer NOT NULL
+    customer_id integer NOT NULL,
+    quantity_bought integer NOT NULL
 );
 
 
 ALTER TABLE public.transaction OWNER TO postgres;
-
---
--- Name: transaction_payment_confirmation_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.transaction_payment_confirmation_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.transaction_payment_confirmation_id_seq OWNER TO postgres;
-
---
--- Name: transaction_payment_confirmation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.transaction_payment_confirmation_id_seq OWNED BY public.transaction.payment_confirmation_id;
-
 
 --
 -- Name: transaction_transaction_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -174,6 +151,27 @@ ALTER SEQUENCE public.transaction_transaction_id_seq OWNED BY public.transaction
 
 
 --
+-- Name: view_all; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.view_all AS
+ SELECT transaction.customer_id,
+    product.product_id,
+    product.available,
+    product.lemons,
+    transaction.transaction_id,
+    transaction.price,
+    transaction.payment_received,
+    transaction.quantity_bought,
+    customers.name
+   FROM ((public.product
+     JOIN public.transaction USING (product_id))
+     JOIN public.customers USING (customer_id));
+
+
+ALTER TABLE public.view_all OWNER TO postgres;
+
+--
 -- Name: customers customer_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -195,57 +193,94 @@ ALTER TABLE ONLY public.transaction ALTER COLUMN transaction_id SET DEFAULT next
 
 
 --
--- Name: transaction payment_confirmation_id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.transaction ALTER COLUMN payment_confirmation_id SET DEFAULT nextval('public.transaction_payment_confirmation_id_seq'::regclass);
-
-
---
 -- Data for Name: customers; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.customers VALUES (13, 'Jake');
+INSERT INTO public.customers VALUES (1, 'predator');
+INSERT INTO public.customers VALUES (2, 'sally');
+INSERT INTO public.customers VALUES (3, 'Ben');
+INSERT INTO public.customers VALUES (4, 'janet');
+INSERT INTO public.customers VALUES (5, 'Jason');
+INSERT INTO public.customers VALUES (6, 'Kenny');
 
 
 --
 -- Data for Name: product; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.product VALUES (1, true, 'Lisbon');
+INSERT INTO public.product VALUES (2, true, 'Eureka');
+INSERT INTO public.product VALUES (3, true, 'Myer');
+INSERT INTO public.product VALUES (4, true, 'Bearss');
+INSERT INTO public.product VALUES (6, true, 'Primoiori');
+INSERT INTO public.product VALUES (7, true, 'Verna');
+INSERT INTO public.product VALUES (9, true, 'Primoiori');
+INSERT INTO public.product VALUES (10, true, 'Verna');
+INSERT INTO public.product VALUES (11, true, 'Limetta');
+INSERT INTO public.product VALUES (12, true, 'Lisbon');
+INSERT INTO public.product VALUES (13, true, 'Eureka');
+INSERT INTO public.product VALUES (14, true, 'Myer');
+INSERT INTO public.product VALUES (15, true, 'Bearss');
+INSERT INTO public.product VALUES (16, true, 'Primoiori');
+INSERT INTO public.product VALUES (17, true, 'Lisbon');
+INSERT INTO public.product VALUES (18, true, 'Eureka');
+INSERT INTO public.product VALUES (19, true, 'Myer');
+INSERT INTO public.product VALUES (20, true, 'Bearss');
+INSERT INTO public.product VALUES (21, true, 'Limetta');
+INSERT INTO public.product VALUES (22, true, 'Verna');
+INSERT INTO public.product VALUES (23, true, 'Eureka');
+INSERT INTO public.product VALUES (24, true, 'Myer');
+INSERT INTO public.product VALUES (26, true, 'Primoiori');
+INSERT INTO public.product VALUES (27, true, 'Lisbon');
+INSERT INTO public.product VALUES (28, true, 'Eureka');
+INSERT INTO public.product VALUES (29, true, 'Verna');
+INSERT INTO public.product VALUES (31, true, 'Primoiori');
+INSERT INTO public.product VALUES (32, true, 'Verna');
+INSERT INTO public.product VALUES (33, true, 'Limetta');
+INSERT INTO public.product VALUES (35, true, 'Eureka');
+INSERT INTO public.product VALUES (36, true, 'Myer');
+INSERT INTO public.product VALUES (40, false, 'Bearss');
+INSERT INTO public.product VALUES (39, false, 'Myer');
+INSERT INTO public.product VALUES (38, false, 'Eureka');
+INSERT INTO public.product VALUES (30, false, 'Limetta');
+INSERT INTO public.product VALUES (34, false, 'Lisbon');
+INSERT INTO public.product VALUES (25, false, 'Bearss');
+INSERT INTO public.product VALUES (37, false, 'Lisbon');
+INSERT INTO public.product VALUES (8, false, 'Limetta');
+INSERT INTO public.product VALUES (5, false, 'Limetta');
 
 
 --
 -- Data for Name: transaction; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.transaction VALUES (1, 3.50, 4.53, 40, 1, 1);
+INSERT INTO public.transaction VALUES (3, 3.50, 3.45, 30, 3, 1);
+INSERT INTO public.transaction VALUES (4, 7.00, 7.80, 34, 4, 2);
+INSERT INTO public.transaction VALUES (2, 7.00, 7.50, 39, 2, 2);
+INSERT INTO public.transaction VALUES (5, 3.50, 5.65, 37, 5, 1);
+INSERT INTO public.transaction VALUES (6, 7.00, 3.44, 8, 6, 2);
 
 
 --
 -- Name: customers_customer_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.customers_customer_id_seq', 13, true);
+SELECT pg_catalog.setval('public.customers_customer_id_seq', 6, true);
 
 
 --
 -- Name: product_product_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.product_product_id_seq', 1, false);
-
-
---
--- Name: transaction_payment_confirmation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.transaction_payment_confirmation_id_seq', 1, false);
+SELECT pg_catalog.setval('public.product_product_id_seq', 40, true);
 
 
 --
 -- Name: transaction_transaction_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.transaction_transaction_id_seq', 1, false);
+SELECT pg_catalog.setval('public.transaction_transaction_id_seq', 6, true);
 
 
 --
@@ -254,14 +289,6 @@ SELECT pg_catalog.setval('public.transaction_transaction_id_seq', 1, false);
 
 ALTER TABLE ONLY public.customers
     ADD CONSTRAINT customers_pkey PRIMARY KEY (customer_id);
-
-
---
--- Name: product product_lemons_key; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.product
-    ADD CONSTRAINT product_lemons_key UNIQUE (lemons);
 
 
 --
@@ -286,14 +313,6 @@ ALTER TABLE ONLY public.transaction
 
 ALTER TABLE ONLY public.transaction
     ADD CONSTRAINT transaction_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.customers(customer_id);
-
-
---
--- Name: transaction transaction_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.transaction
-    ADD CONSTRAINT transaction_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.product(product_id);
 
 
 --
