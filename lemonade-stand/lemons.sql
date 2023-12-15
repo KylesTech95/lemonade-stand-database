@@ -49,7 +49,9 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.customers (
     customer_id integer NOT NULL,
-    name character varying(15) NOT NULL
+    name character varying(15),
+    first_lemon character varying(15),
+    second_lemon character varying(15)
 );
 
 
@@ -84,7 +86,7 @@ ALTER SEQUENCE public.customers_customer_id_seq OWNED BY public.customers.custom
 CREATE TABLE public.product (
     product_id integer NOT NULL,
     available boolean DEFAULT true,
-    lemons character varying(15) NOT NULL
+    lemons character varying(15)
 );
 
 
@@ -196,12 +198,7 @@ ALTER TABLE ONLY public.transaction ALTER COLUMN transaction_id SET DEFAULT next
 -- Data for Name: customers; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.customers VALUES (1, 'predator');
-INSERT INTO public.customers VALUES (2, 'sally');
-INSERT INTO public.customers VALUES (3, 'Ben');
-INSERT INTO public.customers VALUES (4, 'janet');
-INSERT INTO public.customers VALUES (5, 'Jason');
-INSERT INTO public.customers VALUES (6, 'Kenny');
+INSERT INTO public.customers VALUES (1, 'Yen', '34) Lisbon', '22) Verna');
 
 
 --
@@ -212,8 +209,10 @@ INSERT INTO public.product VALUES (1, true, 'Lisbon');
 INSERT INTO public.product VALUES (2, true, 'Eureka');
 INSERT INTO public.product VALUES (3, true, 'Myer');
 INSERT INTO public.product VALUES (4, true, 'Bearss');
+INSERT INTO public.product VALUES (5, true, 'Limetta');
 INSERT INTO public.product VALUES (6, true, 'Primoiori');
 INSERT INTO public.product VALUES (7, true, 'Verna');
+INSERT INTO public.product VALUES (8, true, 'Limetta');
 INSERT INTO public.product VALUES (9, true, 'Primoiori');
 INSERT INTO public.product VALUES (10, true, 'Verna');
 INSERT INTO public.product VALUES (11, true, 'Limetta');
@@ -227,46 +226,39 @@ INSERT INTO public.product VALUES (18, true, 'Eureka');
 INSERT INTO public.product VALUES (19, true, 'Myer');
 INSERT INTO public.product VALUES (20, true, 'Bearss');
 INSERT INTO public.product VALUES (21, true, 'Limetta');
-INSERT INTO public.product VALUES (22, true, 'Verna');
 INSERT INTO public.product VALUES (23, true, 'Eureka');
 INSERT INTO public.product VALUES (24, true, 'Myer');
+INSERT INTO public.product VALUES (25, true, 'Bearss');
 INSERT INTO public.product VALUES (26, true, 'Primoiori');
 INSERT INTO public.product VALUES (27, true, 'Lisbon');
 INSERT INTO public.product VALUES (28, true, 'Eureka');
 INSERT INTO public.product VALUES (29, true, 'Verna');
+INSERT INTO public.product VALUES (30, true, 'Limetta');
 INSERT INTO public.product VALUES (31, true, 'Primoiori');
 INSERT INTO public.product VALUES (32, true, 'Verna');
 INSERT INTO public.product VALUES (33, true, 'Limetta');
 INSERT INTO public.product VALUES (35, true, 'Eureka');
 INSERT INTO public.product VALUES (36, true, 'Myer');
-INSERT INTO public.product VALUES (40, false, 'Bearss');
-INSERT INTO public.product VALUES (39, false, 'Myer');
-INSERT INTO public.product VALUES (38, false, 'Eureka');
-INSERT INTO public.product VALUES (30, false, 'Limetta');
+INSERT INTO public.product VALUES (37, true, 'Lisbon');
+INSERT INTO public.product VALUES (38, true, 'Eureka');
+INSERT INTO public.product VALUES (39, true, 'Myer');
+INSERT INTO public.product VALUES (40, true, 'Bearss');
 INSERT INTO public.product VALUES (34, false, 'Lisbon');
-INSERT INTO public.product VALUES (25, false, 'Bearss');
-INSERT INTO public.product VALUES (37, false, 'Lisbon');
-INSERT INTO public.product VALUES (8, false, 'Limetta');
-INSERT INTO public.product VALUES (5, false, 'Limetta');
+INSERT INTO public.product VALUES (22, false, 'Verna');
 
 
 --
 -- Data for Name: transaction; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.transaction VALUES (1, 3.50, 4.53, 40, 1, 1);
-INSERT INTO public.transaction VALUES (3, 3.50, 3.45, 30, 3, 1);
-INSERT INTO public.transaction VALUES (4, 7.00, 7.80, 34, 4, 2);
-INSERT INTO public.transaction VALUES (2, 7.00, 7.50, 39, 2, 2);
-INSERT INTO public.transaction VALUES (5, 3.50, 5.65, 37, 5, 1);
-INSERT INTO public.transaction VALUES (6, 7.00, 3.44, 8, 6, 2);
+INSERT INTO public.transaction VALUES (1, 7.00, 8.40, 34, 1, 2);
 
 
 --
 -- Name: customers_customer_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.customers_customer_id_seq', 6, true);
+SELECT pg_catalog.setval('public.customers_customer_id_seq', 1, true);
 
 
 --
@@ -280,7 +272,7 @@ SELECT pg_catalog.setval('public.product_product_id_seq', 40, true);
 -- Name: transaction_transaction_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.transaction_transaction_id_seq', 6, true);
+SELECT pg_catalog.setval('public.transaction_transaction_id_seq', 1, true);
 
 
 --
