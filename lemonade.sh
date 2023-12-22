@@ -90,16 +90,16 @@ PURCHASE(){
                 # if customer name is invalid again, send to menu
                     if [[ ! $CUSTOMER_NAME =~ ^[a-zA-Z]+$ ]]
                     then
-                        MENU "Sorry but we cannot enter an invalid name."
+                        MENU "\nSorry but we cannot enter an invalid name."
                     else
-                        echo "Hello $CUSTOMER_NAME"
+                        echo -e "\nHello $CUSTOMER_NAME"
                     fi
                 else
-                    echo "Hello $CUSTOMER_NAME"
+                    echo -e "\nHello $CUSTOMER_NAME"
             fi
             # sleep for 2 seconds
             sleep 2
-            echo -e "Select from available lemons inventory"
+            echo -e "\nSelect from available lemons inventory"
             #select from available lemons
             AVAILABLE_LEMONS=$($PSQL "SELECT product_id, lemons from product WHERE available = true ORDER BY product_id")
             sleep 2
@@ -147,10 +147,15 @@ PURCHASE(){
             if [[ $OPTION =~ ^[n|N]$ ]]
             then
                 INSERT_CUSTOMER=$($PSQL "insert into customers(name,first_lemon) values('$CUSTOMER_NAME','$F_LEMON')" )
+                CUSTOMER_ID=$($PSQL "select customer_id from customers where name='$CUSTOMER_NAME' and first_lemon='$F_LEMON'")
+                CL=$($PSQL "update product set customer_lemons_id=$CUSTOMER_ID where product_id=$LEMON_TO_BUY")
                 if [[ $INSERT_CUSTOMER == "INSERT 0 1" ]]
                 then
+                    echo -e "customer_lemons_id: $LEMON_TO_BUY (customer_id)"
                     MENU "\n$CUSTOMER_NAME chose $F_LEMON - Quantity: 1"
                 fi
+
+
             # user selects YES
             else
             # option to purchase 1 more lemon
@@ -159,9 +164,20 @@ PURCHASE(){
             # if no bikes available
             if [[ -z $AVAILABLE_LEMONS ]]
                 then
-                MENU "\nSorry, we don't have any lemons available right now."
-                else 
+                INSERT_CUSTOMER=$($PSQL "insert into customers(name,first_lemon) values('$CUSTOMER_NAME','$F_LEMON')" )
+                CUSTOMER_ID=$($PSQL "select customer_id from customers where name='$CUSTOMER_NAME' and first_lemon='$F_LEMON'")
+                CL=$($PSQL "update product set customer_lemons_id=$CUSTOMER_ID where product_id=$LEMON_TO_BUY")
+                    
                 
+                echo -e "\nSorry, we don't have any lemons available right now."
+                if [[ $INSERT_CUSTOMER == "INSERT 0 1" ]]
+                    then
+                        echo -e "customer_lemons_id: $LEMON_TO_BUY (customer_id)"
+                        MENU "\n$CUSTOMER_NAME chose $F_LEMON - Quantity: 1"
+                    fi
+                sleep 2
+                MENU
+                else 
                     # sleep for 2 seconds
                     sleep 2
                     echo -e "\nSelect from available lemons inventory"
@@ -175,30 +191,34 @@ PURCHASE(){
                     # ask for lemon to purchase
                     echo -e "\nWhich one would you like to purchase? (Choose by the number)"
                     #user chooses a lemon from the list of available lemons
-                    read LEMON_TO_BUY
+                    read LEMON_TO_BUY2
                     # if input is not a number
-                if [[ ! $LEMON_TO_BUY =~ ^[0-9]+$ ]]
+                if [[ ! $LEMON_TO_BUY2 =~ ^[0-9]+$ ]]
                     then
                     # send to main menu
                     MENU "\nThat is not a valid number."
                     else 
                     # get lemon availability
-                    AVAILABLE_LEMONS=$($PSQL "select available from product where product_id = $LEMON_TO_BUY and available = true")
+                    AVAILABLE_LEMONS=$($PSQL "select available from product where product_id = $LEMON_TO_BUY2 and available = true")
                     # if not available
                     if [[ -z $AVAILABLE_LEMONS ]]
                         then 
                         # send to main menu
-                        MENU "\naThat lemon-batch is not available."
+                        MENU "\nThat lemon-batch is not available."
                         else
-                        # give first_lemon a name
-                        SECOND_LEMON=$($PSQL "select lemons from product where product_id=$LEMON_TO_BUY")
-                        UPDATE_LEMONS=$($PSQL "update product set available=false where product_id=$LEMON_TO_BUY")
+                        # give second_lemon a name
+                        SECOND_LEMON=$($PSQL "select lemons from product where product_id=$LEMON_TO_BUY2")
+                        UPDATE_LEMONS=$($PSQL "update product set available=false where product_id=$LEMON_TO_BUY2")
                         # modify input
                         S_LEMON=$(echo "$SECOND_LEMON" | sed -E 's/^\s+//')
                         INSERT_CUSTOMER=$($PSQL "insert into customers(name,first_lemon,second_lemon) values('$CUSTOMER_NAME','$F_LEMON','$S_LEMON')" )
+                        CUSTOMER_ID=$($PSQL "select customer_id from customers where name='$CUSTOMER_NAME' and second_lemon='$S_LEMON' and first_lemon='$F_LEMON'")
+                        CL=$($PSQL "update product set customer_lemons_id=$CUSTOMER_ID where product_id=$LEMON_TO_BUY2")
                             if [[ $INSERT_CUSTOMER == "INSERT 0 1" ]]
                             then
+                                echo -e "customer_lemons_id: $LEMON_TO_BUY2 (customer_id)"
                                 MENU "\n$CUSTOMER_NAME chose $S_LEMON - Quantity: 2"
+                                
                             fi
                     fi
                 fi
