@@ -202,18 +202,25 @@ ALTER TABLE ONLY public.transaction ALTER COLUMN transaction_id SET DEFAULT next
 -- Data for Name: customers; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.customers VALUES (1, 'Jayce', 'Bearss', 'Myer');
-INSERT INTO public.customers VALUES (2, 'Greg', 'Eureka', NULL);
-INSERT INTO public.customers VALUES (3, 'Sally', 'Lisbon', 'Myer');
-INSERT INTO public.customers VALUES (4, 'Chance', 'Lisbon', NULL);
-INSERT INTO public.customers VALUES (5, 'Jackie', 'Primoiori', 'Myer');
-INSERT INTO public.customers VALUES (6, 'Rick', 'Verna', 'Eureka');
+INSERT INTO public.customers VALUES (1, 'Kyle', 'Eureka', 'Myer');
+INSERT INTO public.customers VALUES (2, 'Sam', 'Bearss', 'Eureka');
+INSERT INTO public.customers VALUES (3, 'Craig', 'Lisbon', NULL);
+INSERT INTO public.customers VALUES (4, 'mason', 'Limetta', 'Myer');
+INSERT INTO public.customers VALUES (5, 'Grain', 'Primoiori', 'Limetta');
+INSERT INTO public.customers VALUES (6, 'tammy', 'Lisbon', 'Lisbon');
+INSERT INTO public.customers VALUES (7, 'Martin', 'Verna', NULL);
+INSERT INTO public.customers VALUES (8, 'nathan', 'Lisbon', NULL);
+INSERT INTO public.customers VALUES (9, 'Jackyl', 'Myer', NULL);
+INSERT INTO public.customers VALUES (10, 'kyon', 'Eureka', NULL);
+INSERT INTO public.customers VALUES (11, 'Bryan', 'Bearss', NULL);
+INSERT INTO public.customers VALUES (12, 'nute', 'Bearss', NULL);
 
 
 --
 -- Data for Name: product; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.product VALUES (1, true, 'Lisbon', NULL);
 INSERT INTO public.product VALUES (2, true, 'Eureka', NULL);
 INSERT INTO public.product VALUES (3, true, 'Myer', NULL);
 INSERT INTO public.product VALUES (4, true, 'Bearss', NULL);
@@ -222,38 +229,37 @@ INSERT INTO public.product VALUES (6, true, 'Primoiori', NULL);
 INSERT INTO public.product VALUES (7, true, 'Verna', NULL);
 INSERT INTO public.product VALUES (8, true, 'Limetta', NULL);
 INSERT INTO public.product VALUES (9, true, 'Primoiori', NULL);
-INSERT INTO public.product VALUES (10, true, 'Verna', NULL);
 INSERT INTO public.product VALUES (11, true, 'Limetta', NULL);
-INSERT INTO public.product VALUES (12, true, 'Lisbon', NULL);
 INSERT INTO public.product VALUES (13, true, 'Eureka', NULL);
-INSERT INTO public.product VALUES (14, true, 'Myer', NULL);
-INSERT INTO public.product VALUES (15, true, 'Bearss', NULL);
 INSERT INTO public.product VALUES (16, true, 'Primoiori', NULL);
 INSERT INTO public.product VALUES (17, true, 'Lisbon', NULL);
-INSERT INTO public.product VALUES (18, true, 'Eureka', NULL);
 INSERT INTO public.product VALUES (19, true, 'Myer', NULL);
-INSERT INTO public.product VALUES (20, true, 'Bearss', NULL);
-INSERT INTO public.product VALUES (21, true, 'Limetta', NULL);
+INSERT INTO public.product VALUES (22, true, 'Verna', NULL);
+INSERT INTO public.product VALUES (24, true, 'Myer', NULL);
 INSERT INTO public.product VALUES (25, true, 'Bearss', NULL);
-INSERT INTO public.product VALUES (27, true, 'Lisbon', NULL);
+INSERT INTO public.product VALUES (26, true, 'Primoiori', NULL);
 INSERT INTO public.product VALUES (28, true, 'Eureka', NULL);
 INSERT INTO public.product VALUES (29, true, 'Verna', NULL);
-INSERT INTO public.product VALUES (30, true, 'Limetta', NULL);
-INSERT INTO public.product VALUES (31, true, 'Primoiori', NULL);
 INSERT INTO public.product VALUES (32, true, 'Verna', NULL);
 INSERT INTO public.product VALUES (33, true, 'Limetta', NULL);
-INSERT INTO public.product VALUES (34, true, 'Lisbon', NULL);
 INSERT INTO public.product VALUES (35, true, 'Eureka', NULL);
-INSERT INTO public.product VALUES (40, false, 'Bearss', NULL);
-INSERT INTO public.product VALUES (39, false, 'Myer', NULL);
-INSERT INTO public.product VALUES (38, false, 'Eureka', NULL);
-INSERT INTO public.product VALUES (37, false, 'Lisbon', NULL);
-INSERT INTO public.product VALUES (36, false, 'Myer', NULL);
-INSERT INTO public.product VALUES (1, false, 'Lisbon', NULL);
-INSERT INTO public.product VALUES (26, false, 'Primoiori', NULL);
-INSERT INTO public.product VALUES (24, false, 'Myer', NULL);
-INSERT INTO public.product VALUES (22, false, 'Verna', NULL);
 INSERT INTO public.product VALUES (23, false, 'Eureka', NULL);
+INSERT INTO public.product VALUES (14, false, 'Myer', NULL);
+INSERT INTO public.product VALUES (40, false, 'Bearss', NULL);
+INSERT INTO public.product VALUES (38, false, 'Eureka', NULL);
+INSERT INTO public.product VALUES (12, false, 'Lisbon', NULL);
+INSERT INTO public.product VALUES (30, false, 'Limetta', NULL);
+INSERT INTO public.product VALUES (36, false, 'Myer', NULL);
+INSERT INTO public.product VALUES (31, false, 'Primoiori', NULL);
+INSERT INTO public.product VALUES (21, false, 'Limetta', NULL);
+INSERT INTO public.product VALUES (37, false, 'Lisbon', NULL);
+INSERT INTO public.product VALUES (34, false, 'Lisbon', NULL);
+INSERT INTO public.product VALUES (10, false, 'Verna', NULL);
+INSERT INTO public.product VALUES (27, false, 'Lisbon', NULL);
+INSERT INTO public.product VALUES (39, false, 'Myer', NULL);
+INSERT INTO public.product VALUES (18, false, 'Eureka', NULL);
+INSERT INTO public.product VALUES (15, false, 'Bearss', NULL);
+INSERT INTO public.product VALUES (20, false, 'Bearss', NULL);
 
 
 --
@@ -266,7 +272,7 @@ INSERT INTO public.product VALUES (23, false, 'Eureka', NULL);
 -- Name: customers_customer_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.customers_customer_id_seq', 6, true);
+SELECT pg_catalog.setval('public.customers_customer_id_seq', 12, true);
 
 
 --

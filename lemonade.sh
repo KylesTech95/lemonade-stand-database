@@ -39,22 +39,22 @@ MENU(){
     # get num of rows
     MAX_ROWS=$($PSQL "select count(lemons) from product")
     # if count(lemons) is not greater than 1, insert inventory.
-    if [[ ! $MAX_ROWS -gt 1 ]]
-    then
-        INSERT_INVENTORY
-        MENU
-    fi
+        if [[ ! $MAX_ROWS -gt 1 ]]
+        then
+            INSERT_INVENTORY
+            MENU
+        fi
+        # If a variable is present after the functionCall, state it
+        if [[ $1 ]]
+        then 
+            echo -e "\n$1"
+            sleep 2
+        # if not, give the general greeting for MENU
+        else
+            echo -e "\nMain Menu\n"
+        fi
 
-    # If a variable is present after the functionCall, state it
-    if [[ $1 ]]
-    then 
-        echo -e "\n$1"
-    # if not, give the general greeting for MENU
-    else
-        echo -e "\nMain Menu\n"
-    fi
-
-    echo -e "1)Purchase lemons\n2)view our sales\n3)exit"
+    echo -e "\n1)Purchase lemons\n2)view our sales\n3)exit"
     read OPTION
 
         case $OPTION in
@@ -74,10 +74,10 @@ PURCHASE(){
     # if no bikes available
     if [[ -z $AVAILABLE_LEMONS ]]
         then
-        MENU "Sorry, we don't have any lemons available right now."
+        MENU "\nSorry, we don't have any lemons available right now."
         else 
         # What is your name?
-        sleep 1
+        sleep 2
         echo -e "\nWhat is your name? (first name)"
         read CUSTOMER_NAME
             # if customer name includes anything except letters
@@ -85,7 +85,7 @@ PURCHASE(){
                 then
                 # Enter a valid name with letters
                 echo -e "\nEnter a valid name with letters."
-                sleep 1
+                sleep 2
                 read CUSTOMER_NAME
                 # if customer name is invalid again, send to menu
                     if [[ ! $CUSTOMER_NAME =~ ^[a-zA-Z]+$ ]]
@@ -102,7 +102,7 @@ PURCHASE(){
             echo -e "Select from available lemons inventory"
             #select from available lemons
             AVAILABLE_LEMONS=$($PSQL "SELECT product_id, lemons from product WHERE available = true ORDER BY product_id")
-            sleep 1
+            sleep 2
             echo "$AVAILABLE_LEMONS" | while read PRODUCT_ID BAR LEMONS
                 do
                     echo "$PRODUCT_ID. $LEMONS lemons"
@@ -115,7 +115,7 @@ PURCHASE(){
             if [[ ! $LEMON_TO_BUY =~ ^[0-9]+$ ]]
                 then
                 # send to main menu
-                MENU "That is not a valid number."
+                MENU "\nThat is not a valid number."
                 else 
                 # get lemon availability
                 AVAILABLE_LEMONS=$($PSQL "select available from product where product_id = $LEMON_TO_BUY and available = true")
@@ -123,7 +123,7 @@ PURCHASE(){
                     if [[ -z $AVAILABLE_LEMONS ]]
                         then 
                         # send to main menu
-                        MENU "That lemon-batch is not available."
+                        MENU "\nThat lemon-batch is not available."
                         else
                         # give first_lemon a name
                         FIRST_LEMON=$($PSQL "select lemons from product where product_id=$LEMON_TO_BUY")
@@ -131,7 +131,7 @@ PURCHASE(){
                         # modify input
                         F_LEMON=$(echo "$FIRST_LEMON" | sed -E 's/^\s+//')
                         echo -e "\n$CUSTOMER_NAME selected $F_LEMON lemons"
-                        sleep 1
+                        sleep 2
                     fi
             fi
     fi
@@ -141,7 +141,7 @@ PURCHASE(){
     read OPTION
     if [[ ! $OPTION =~ ^[y|n|Y|N]$ ]]
         then
-            MENU "oops! Wrong option. Welcome to menu"
+            MENU "\noops! Wrong option. Welcome to menu"
         else
             # user selects NO
             if [[ $OPTION =~ ^[n|N]$ ]]
@@ -159,15 +159,15 @@ PURCHASE(){
             # if no bikes available
             if [[ -z $AVAILABLE_LEMONS ]]
                 then
-                MENU "Sorry, we don't have any lemons available right now."
+                MENU "\nSorry, we don't have any lemons available right now."
                 else 
                 
                     # sleep for 2 seconds
                     sleep 2
-                    echo -e "Select from available lemons inventory"
+                    echo -e "\nSelect from available lemons inventory"
                     #select from available lemons
                     AVAILABLE_LEMONS=$($PSQL "SELECT product_id, lemons from product WHERE available = true ORDER BY product_id")
-                    sleep 1
+                    sleep 2
                     echo "$AVAILABLE_LEMONS" | while read PRODUCT_ID BAR LEMONS
                         do
                             echo "$PRODUCT_ID. $LEMONS lemons"
@@ -177,31 +177,31 @@ PURCHASE(){
                     #user chooses a lemon from the list of available lemons
                     read LEMON_TO_BUY
                     # if input is not a number
-                    if [[ ! $LEMON_TO_BUY =~ ^[0-9]+$ ]]
-                        then
+                if [[ ! $LEMON_TO_BUY =~ ^[0-9]+$ ]]
+                    then
+                    # send to main menu
+                    MENU "\nThat is not a valid number."
+                    else 
+                    # get lemon availability
+                    AVAILABLE_LEMONS=$($PSQL "select available from product where product_id = $LEMON_TO_BUY and available = true")
+                    # if not available
+                    if [[ -z $AVAILABLE_LEMONS ]]
+                        then 
                         # send to main menu
-                        MENU "That is not a valid number."
-                        else 
-                        # get lemon availability
-                        AVAILABLE_LEMONS=$($PSQL "select available from product where product_id = $LEMON_TO_BUY and available = true")
-                        # if not available
-                            if [[ -z $AVAILABLE_LEMONS ]]
-                                then 
-                                # send to main menu
-                                MENU "That lemon-batch is not available."
-                                else
-                                # give first_lemon a name
-                                SECOND_LEMON=$($PSQL "select lemons from product where product_id=$LEMON_TO_BUY")
-                                UPDATE_LEMONS=$($PSQL "update product set available=false where product_id=$LEMON_TO_BUY")
-                                # modify input
-                                S_LEMON=$(echo "$SECOND_LEMON" | sed -E 's/^\s+//')
-                                INSERT_CUSTOMER=$($PSQL "insert into customers(name,first_lemon,second_lemon) values('$CUSTOMER_NAME','$F_LEMON','$S_LEMON')" )
-                                    if [[ $INSERT_CUSTOMER == "INSERT 0 1" ]]
-                                    then
-                                        MENU "\n$CUSTOMER_NAME chose $F_LEMON - Quantity: 2"
-                                    fi
+                        MENU "\naThat lemon-batch is not available."
+                        else
+                        # give first_lemon a name
+                        SECOND_LEMON=$($PSQL "select lemons from product where product_id=$LEMON_TO_BUY")
+                        UPDATE_LEMONS=$($PSQL "update product set available=false where product_id=$LEMON_TO_BUY")
+                        # modify input
+                        S_LEMON=$(echo "$SECOND_LEMON" | sed -E 's/^\s+//')
+                        INSERT_CUSTOMER=$($PSQL "insert into customers(name,first_lemon,second_lemon) values('$CUSTOMER_NAME','$F_LEMON','$S_LEMON')" )
+                            if [[ $INSERT_CUSTOMER == "INSERT 0 1" ]]
+                            then
+                                MENU "\n$CUSTOMER_NAME chose $S_LEMON - Quantity: 2"
                             fi
                     fi
+                fi
             fi
         fi         
     fi
@@ -223,6 +223,7 @@ echo -e "\nView our sales"
 
 EXIT(){
 echo "Thank you for visiting the shop!"
+sleep 2
 }
 
 MENU
