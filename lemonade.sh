@@ -273,7 +273,8 @@ ENTER_TRANSACTION(){
     # Enter data into transaction
     # price, customer_payment,product_id,customer_id,quantity
     INSERT_TRANSACTION=$($PSQL "insert into transaction(price,payment_received,product_id,customer_id,quantity) values('$PRICE','$CUSTOMER_PAYMENT',$PRODUCT_ID,$CUSTOMER_ID,$QUANTITY)")
-    echo $INSERT_TRANSACTION
+    seep 1
+    MENU
 }
 VIEW_OUR_SALES(){
     echo -e "\nView our sales"
