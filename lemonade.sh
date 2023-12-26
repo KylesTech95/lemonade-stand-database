@@ -261,6 +261,9 @@ ENTER_TRANSACTION(){
             then
                 #delete customer
                 DELETE_CUSTOMER=$($PSQL "delete from customers where customer_id=$CUSTOMER_ID")
+                #restore sequence back prior to the customer failing to purchase.
+                #sum=$(($var1 + $var2))
+                ALTER_CUSTOMER_SEQUENCE=$($PSQL "alter sequence customers_customer_id_seq restart with $CUSTOMER_ID")
                 #set product_id back to true since customer cannot afford lemonade.
                 PRODUCT_IS_AVAILABLE=$($PSQL "update product set available=true where product_id=$PRODUCT_ID")
                 echo "$DELETE_CUSTOMER"
@@ -280,7 +283,14 @@ VIEW_OUR_SALES(){
     echo -e "\n~~~ View our sales ~~~"
     #obtain total sales
     TOTAL_SALES=$($PSQL "select sum(payment_received) from transaction")
-    echo -e "\nTotal Sales: \$$TOTAL_SALES"
+    ONE_CENT='0.01'
+        BOOL=$(echo "$TOTLA_SALES < $ONE_CENT" | bc -l)
+        if [[ $BOOL == 1 ]]
+        then
+        echo -e "\nTotal Sales: \$$TOTAL_SALES"
+        else
+        echo -e "\nWe have not sold any lemons yet.\nPlease wait for a customer."
+        fi
     sleep 1
     MENU
 }
@@ -288,5 +298,4 @@ EXIT(){
     echo "Thank you for visiting the shop!"
     sleep 1
 }
-
 MENU
