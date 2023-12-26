@@ -8,7 +8,6 @@ PSQL="psql -X --username=postgres --dbname=lemonade --tuples-only -c"
 #run the script "./lemonade.sh"
 #insert your own data (original data is cleared)
 #comment the line that was uncommented to save data
-
 echo -e "\n~~~ Welcome to my Lemonade Stand ~~~\n"
 #_______________________________________________________________________________________________________________________________________________________________________________________________________
 
@@ -48,7 +47,7 @@ MENU(){
         if [[ $1 ]]
         then 
             echo -e "\n$1"
-            sleep 2
+            sleep 1
         # if not, give the general greeting for MENU
         else
             echo -e "\nMain Menu\n"
@@ -64,7 +63,6 @@ MENU(){
         esac
     
 }
-
 #_______________________________________________________________________________________________________________________
 PURCHASE(){
  echo -e "\n~~~ Welcome to Purchase~~~\n"
@@ -77,7 +75,7 @@ PURCHASE(){
         MENU "\nSorry, we don't have any lemons available right now."
         else 
         # What is your name?
-        sleep 2
+        sleep 1
         echo -e "\nWhat is your name? (first name)"
         read CUSTOMER_NAME
             # if customer name includes anything except letters
@@ -85,7 +83,7 @@ PURCHASE(){
                 then
                 # Enter a valid name with letters
                 echo -e "\nEnter a valid name with letters."
-                sleep 2
+                sleep 1
                 read CUSTOMER_NAME
                 # if customer name is invalid again, send to menu
                     if [[ ! $CUSTOMER_NAME =~ ^[a-zA-Z]+$ ]]
@@ -98,11 +96,11 @@ PURCHASE(){
                     echo -e "\nHello $CUSTOMER_NAME"
             fi
             # sleep for 2 seconds
-            sleep 2
+            sleep 1
             echo -e "\nSelect from available lemons inventory"
             #select from available lemons
             AVAILABLE_LEMONS=$($PSQL "SELECT product_id, lemons from product WHERE available = true ORDER BY product_id")
-            sleep 2
+            sleep 1
             echo "$AVAILABLE_LEMONS" | while read PRODUCT_ID BAR LEMONS
                 do
                     echo "$PRODUCT_ID. $LEMONS lemons"
@@ -135,7 +133,7 @@ PURCHASE(){
                         # modify input
                         F_LEMON=$(echo "$FIRST_LEMON" | sed -E 's/^\s+//')
                         echo -e "\n$CUSTOMER_NAME selected $F_LEMON lemons"
-                        sleep 2
+                        sleep 1
                     fi
             fi
     fi
@@ -179,15 +177,15 @@ PURCHASE(){
                         echo -e "\n$CUSTOMER_NAME chose $F_LEMON - Quantity: 1"
                         ENTER_TRANSACTION '3.50' $CUSTOMER_ID $PRODUCT_ID 1
                     fi
-                sleep 2
+                sleep 1
                 MENU
                 else 
                     # sleep for 2 seconds
-                    sleep 2
+                    sleep 1
                     echo -e "\nSelect from available lemons inventory"
                     #select from available lemons
                     AVAILABLE_LEMONS=$($PSQL "SELECT product_id, lemons from product WHERE available = true ORDER BY product_id")
-                    sleep 2
+                    sleep 1
                     echo "$AVAILABLE_LEMONS" | while read PRODUCT_ID BAR LEMONS
                         do
                             echo "$PRODUCT_ID. $LEMONS lemons"
@@ -263,23 +261,26 @@ ENTER_TRANSACTION(){
             then
                 #delete customer
                 DELETE_CUSTOMER=$($PSQL "delete from customers where customer_id=$CUSTOMER_ID")
-                #set product_id back to true since customer is acting poor.
+                #set product_id back to true since customer cannot afford lemonade.
                 PRODUCT_IS_AVAILABLE=$($PSQL "update product set available=true where product_id=$PRODUCT_ID")
-                echo $PRODUCT_IS_AVAILABLE
                 echo "$DELETE_CUSTOMER"
+                echo $PRODUCT_IS_AVAILABLE
                 MENU "\nInsufficient Funds."
                 else
-                MENU "\n$CUSTOMER_NAME payed $CUSTOMER_PAYMENT."
-
+                echo -e "\n$CUSTOMER_NAME payed \$$CUSTOMER_PAYMENT."
             fi
         fi
+    # Enter data into transaction
+    # price, customer_payment,product_id,customer_id,quantity
+    INSERT_TRANSACTION=$($PSQL "insert into transaction(price,payment_received,product_id,customer_id,quantity) values('$PRICE','$CUSTOMER_PAYMENT',$PRODUCT_ID,$CUSTOMER_ID,$QUANTITY)")
+    echo $INSERT_TRANSACTION
 }
 VIEW_OUR_SALES(){
     echo -e "\nView our sales"
 }
 EXIT(){
     echo "Thank you for visiting the shop!"
-    sleep 2
+    sleep 1
 }
 
 MENU
