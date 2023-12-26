@@ -15,23 +15,23 @@ echo -e "\n~~~ Welcome to my Lemonade Stand ~~~\n"
 # step-1:insert inventory
 INSERT_INVENTORY(){
     # insert lemons
-# get contents from csv file | replace /r(carriage returns) with emptylines
-cat product.csv | sed -e 's/\r//g' | while IFS="," read LEMONS
-do
-# select lemons from product
-    GET_ROWS=$($PSQL "select count(lemons) from product")
-    # if selection is not equal to "lemons" && number of rows is less than 40
-        if [[ $LEMONS != 'lemons' && $GET_ROWS -lt 40 ]]
-        then
-        #insert lemons
-            INSERT_LEMONS=$($PSQL "insert into product(lemons) values('$LEMONS')")
-            # if variable equals string, reformat echoed string.
-                if [[ $INSERT_LEMONS == "INSERT 0 1" ]]
-                then
-                    echo "$LEMONS inserted into inventory"
-                fi
-        fi
-done
+    # get contents from csv file | replace /r(carriage returns) with emptylines
+    cat product.csv | sed -e 's/\r//g' | while IFS="," read LEMONS
+    do
+    # select lemons from product
+        GET_ROWS=$($PSQL "select count(lemons) from product")
+        # if selection is not equal to "lemons" && number of rows is less than 40
+            if [[ $LEMONS != 'lemons' && $GET_ROWS -lt 40 ]]
+            then
+            #insert lemons
+                INSERT_LEMONS=$($PSQL "insert into product(lemons) values('$LEMONS')")
+                # if variable equals string, reformat echoed string.
+                    if [[ $INSERT_LEMONS == "INSERT 0 1" ]]
+                    then
+                        echo "$LEMONS inserted into inventory"
+                    fi
+            fi
+    done
 }
 #_______________________________________________________________________________________________________________________
 # step-2:main menu
@@ -148,11 +148,12 @@ PURCHASE(){
             then
                 INSERT_CUSTOMER=$($PSQL "insert into customers(name,first_lemon) values('$CUSTOMER_NAME','$F_LEMON')" )
                 CUSTOMER_ID=$($PSQL "select customer_id from customers where name='$CUSTOMER_NAME' and first_lemon='$F_LEMON'")
-                CL=$($PSQL "update product set customer_lemons_id=$CUSTOMER_ID where product_id=$LEMON_TO_BUY")
+                PRODUCT_ID=$($PSQL "select product_id from product where product_id='$LEMON_TO_BUY'")
                 if [[ $INSERT_CUSTOMER == "INSERT 0 1" ]]
                 then
-                    echo -e "customer_lemons_id: $LEMON_TO_BUY (customer_id)"
-                    MENU "\n$CUSTOMER_NAME chose $F_LEMON - Quantity: 1"
+                    echo -e "\n$CUSTOMER_NAME chose $F_LEMON - Quantity: 1"
+                    ENTER_TRANSACTION '3.50' $CUSTOMER_ID $PRODUCT_ID 1
+
                 fi
 
 
@@ -166,14 +167,13 @@ PURCHASE(){
                 then
                 INSERT_CUSTOMER=$($PSQL "insert into customers(name,first_lemon) values('$CUSTOMER_NAME','$F_LEMON')" )
                 CUSTOMER_ID=$($PSQL "select customer_id from customers where name='$CUSTOMER_NAME' and first_lemon='$F_LEMON'")
-                CL=$($PSQL "update product set customer_lemons_id=$CUSTOMER_ID where product_id=$LEMON_TO_BUY")
                     
                 
                 echo -e "\nSorry, we don't have any lemons available right now."
                 if [[ $INSERT_CUSTOMER == "INSERT 0 1" ]]
                     then
-                        echo -e "customer_lemons_id: $LEMON_TO_BUY (customer_id)"
-                        MENU "\n$CUSTOMER_NAME chose $F_LEMON - Quantity: 1"
+                        echo -e "\n$CUSTOMER_NAME chose $F_LEMON - Quantity: 1"
+                        ENTER_TRANSACTION '3.50' $CUSTOMER_ID $PRODUCT_ID 1
                     fi
                 sleep 2
                 MENU
@@ -213,12 +213,11 @@ PURCHASE(){
                         S_LEMON=$(echo "$SECOND_LEMON" | sed -E 's/^\s+//')
                         INSERT_CUSTOMER=$($PSQL "insert into customers(name,first_lemon,second_lemon) values('$CUSTOMER_NAME','$F_LEMON','$S_LEMON')" )
                         CUSTOMER_ID=$($PSQL "select customer_id from customers where name='$CUSTOMER_NAME' and second_lemon='$S_LEMON' and first_lemon='$F_LEMON'")
-                        CL=$($PSQL "update product set customer_lemons_id=$CUSTOMER_ID where product_id=$LEMON_TO_BUY2")
+                        PRODUCT_ID=$($PSQL "select product_id from product where product_id='$LEMON_TO_BUY2'")
                             if [[ $INSERT_CUSTOMER == "INSERT 0 1" ]]
                             then
-                                echo -e "customer_lemons_id: $LEMON_TO_BUY2 (customer_id)"
-                                MENU "\n$CUSTOMER_NAME chose $S_LEMON - Quantity: 2"
-                                
+                                echo -e "\n$CUSTOMER_NAME chose $S_LEMON - Quantity: 2"
+                                ENTER_TRANSACTION '7.00' $CUSTOMER_ID $PRODUCT_ID 2 $CUSTOMER_NAME
                             fi
                     fi
                 fi
@@ -235,15 +234,37 @@ PURCHASE(){
 
 
 }
+# '7.00' $CUSTOMER_ID $PRODUCT_ID 2 CUSTOMER_NAME
+ENTER_TRANSACTION(){
+    PRICE=$1
+    CUSTOMER_ID=$2
+    PRODUCT_ID=$3
+    QUANTITY=$4
+    # Your price is this
+    echo -e "\nYou MUST pay me $PRICE. (format: 1.20 or 4 or \$15.25)"
+    sleep 1
+    read CUSTOMER_PAYMENT
 
-VIEW_OUR_SALES(){
-echo -e "\nView our sales"
+    if [[ ! $CUSTOMER_PAYMENT  =~ ^[0-9]([0-9])?(\.)?([0-9]{1,2})?$ ]]
+        then
+        echo -e "\n$CUSTOMER_PAYMENT is not correct format. Try again"
+        ENTER_TRANSACTION $PRICE
+        else
+        # if the customer_pay is insufficnent
+            if [[ ]]
+            then
+                MENU "\nInsufficient Funds."
+                else
+                echo -e "\n$CUSTOMER_NAME payed $CUSTOMER_PAYMENT."
+            fi
+        fi
 }
-
-
+VIEW_OUR_SALES(){
+    echo -e "\nView our sales"
+}
 EXIT(){
-echo "Thank you for visiting the shop!"
-sleep 2
+    echo "Thank you for visiting the shop!"
+    sleep 2
 }
 
 MENU
