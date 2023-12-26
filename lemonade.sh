@@ -4,7 +4,7 @@ PSQL="psql -X --username=postgres --dbname=lemonade --tuples-only -c"
 
 #if you want to insert your own daa:
 #uncomment the next line to clear the database values & reset all sequences to 1.
-# echo $($PSQL "alter sequence product_product_id_seq restart with 1;alter sequence transaction_transaction_id_seq restart with 1; alter sequence customers_customer_id_seq restart with 1;truncate product,transaction,customers;")
+echo $($PSQL "alter sequence product_product_id_seq restart with 1;alter sequence transaction_transaction_id_seq restart with 1; alter sequence customers_customer_id_seq restart with 1;truncate product,transaction,customers;")
 #run the script "./lemonade.sh"
 #insert your own data (original data is cleared)
 #comment the line that was uncommented to save data
@@ -273,11 +273,16 @@ ENTER_TRANSACTION(){
     # Enter data into transaction
     # price, customer_payment,product_id,customer_id,quantity
     INSERT_TRANSACTION=$($PSQL "insert into transaction(price,payment_received,product_id,customer_id,quantity) values('$PRICE','$CUSTOMER_PAYMENT',$PRODUCT_ID,$CUSTOMER_ID,$QUANTITY)")
-    seep 1
+    sleep 1
     MENU
 }
 VIEW_OUR_SALES(){
-    echo -e "\nView our sales"
+    echo -e "\n~~~ View our sales ~~~"
+    #obtain total sales
+    TOTAL_SALES=$($PSQL "select sum(payment_received) from transaction")
+    echo -e "\nTotal Sales: \$$TOTAL_SALES"
+    sleep 1
+    MENU
 }
 EXIT(){
     echo "Thank you for visiting the shop!"
