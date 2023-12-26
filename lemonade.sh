@@ -115,7 +115,9 @@ PURCHASE(){
             if [[ ! $LEMON_TO_BUY =~ ^[0-9]+$ ]]
                 then
                 # send to main menu
-                MENU "\nThat is not a valid number."
+                echo -e "\nThat is not a valid number."
+                sleep 1
+                PURCHASE
                 else 
                 # get lemon availability
                 AVAILABLE_LEMONS=$($PSQL "select available from product where product_id = $LEMON_TO_BUY and available = true")
@@ -123,7 +125,9 @@ PURCHASE(){
                     if [[ -z $AVAILABLE_LEMONS ]]
                         then 
                         # send to main menu
-                        MENU "\nThat lemon-batch is not available."
+                        echo -e "\nThat lemon-batch is not available."
+                        sleep 1
+                        PURCHASE
                         else
                         # give first_lemon a name
                         FIRST_LEMON=$($PSQL "select lemons from product where product_id=$LEMON_TO_BUY")
@@ -170,7 +174,7 @@ PURCHASE(){
                     
                 
                 echo -e "\nSorry, we don't have any lemons available right now."
-                if [[ $INSERT_CUSTOMER == "INSERT 0 1" ]]
+                    if [[ $INSERT_CUSTOMER == "INSERT 0 1" ]]
                     then
                         echo -e "\n$CUSTOMER_NAME chose $F_LEMON - Quantity: 1"
                         ENTER_TRANSACTION '3.50' $CUSTOMER_ID $PRODUCT_ID 1
@@ -193,10 +197,11 @@ PURCHASE(){
                     #user chooses a lemon from the list of available lemons
                     read LEMON_TO_BUY2
                     # if input is not a number
-                if [[ ! $LEMON_TO_BUY2 =~ ^[0-9]+$ ]]
+                    if [[ ! $LEMON_TO_BUY2 =~ ^[0-9]+$ ]]
                     then
                     # send to main menu
-                    MENU "\nThat is not a valid number."
+                    echo -e "\nThat is not a valid number."
+                    PURCHASE
                     else 
                     # get lemon availability
                     AVAILABLE_LEMONS=$($PSQL "select available from product where product_id = $LEMON_TO_BUY2 and available = true")
@@ -204,7 +209,9 @@ PURCHASE(){
                     if [[ -z $AVAILABLE_LEMONS ]]
                         then 
                         # send to main menu
-                        MENU "\nThat lemon-batch is not available."
+                        echo -e "\nThat lemon-batch is not available."
+                        sleep 1 
+                        PURCHASE
                         else
                         # give second_lemon a name
                         SECOND_LEMON=$($PSQL "select lemons from product where product_id=$LEMON_TO_BUY2")
@@ -256,6 +263,9 @@ ENTER_TRANSACTION(){
             then
                 #delete customer
                 DELETE_CUSTOMER=$($PSQL "delete from customers where customer_id=$CUSTOMER_ID")
+                #set product_id back to true since customer is acting poor.
+                PRODUCT_IS_AVAILABLE=$($PSQL "update product set available=true where product_id=$PRODUCT_ID")
+                echo $PRODUCT_IS_AVAILABLE
                 echo "$DELETE_CUSTOMER"
                 MENU "\nInsufficient Funds."
                 else
