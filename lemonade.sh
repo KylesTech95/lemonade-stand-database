@@ -250,12 +250,17 @@ ENTER_TRANSACTION(){
         echo -e "\n$CUSTOMER_PAYMENT is not correct format. Try again"
         ENTER_TRANSACTION $PRICE
         else
+        BOOL=$(echo "$CUSTOMER_PAYMENT < $PRICE" | bc -l)
         # if the customer_pay is insufficnent
-            if [[ ]]
+            if [[ $BOOL == 1 ]]
             then
+                #delete customer
+                DELETE_CUSTOMER=$($PSQL "delete from customers where customer_id=$CUSTOMER_ID")
+                echo "$DELETE_CUSTOMER"
                 MENU "\nInsufficient Funds."
                 else
-                echo -e "\n$CUSTOMER_NAME payed $CUSTOMER_PAYMENT."
+                MENU "\n$CUSTOMER_NAME payed $CUSTOMER_PAYMENT."
+
             fi
         fi
 }
