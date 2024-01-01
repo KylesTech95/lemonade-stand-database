@@ -129,6 +129,7 @@ PURCHASE(){
                         else
                         # give first_lemon a name
                         FIRST_LEMON=$($PSQL "select lemons from product where product_id=$LEMON_TO_BUY")
+                        # set lemon availability to false
                         UPDATE_LEMONS=$($PSQL "update product set available=false where product_id=$LEMON_TO_BUY")
                         # modify input
                         F_LEMON=$(echo "$FIRST_LEMON" | sed -E 's/^\s+//')
@@ -287,7 +288,7 @@ VIEW_OUR_SALES(){
         if [[ $TRANSACTION_COUNT -ge 1 ]]
         then
         echo -e "\nTotal Sales: \$$TOTAL_SALES"
-                
+
         else
         echo -e "\nWe have not sold any lemons yet.\nPlease wait for a customer."
         fi
