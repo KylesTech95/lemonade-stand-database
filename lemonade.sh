@@ -287,6 +287,7 @@ VIEW_OUR_SALES(){
         if [[ $TRANSACTION_COUNT -ge 1 ]]
         then
         echo -e "\nTotal Sales: \$$TOTAL_SALES"
+                
         else
         echo -e "\nWe have not sold any lemons yet.\nPlease wait for a customer."
         fi
